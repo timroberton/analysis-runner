@@ -6,7 +6,7 @@ type AnalysisProviderProps = {
 export default function AnalysisRunnerProvider(p: AnalysisProviderProps): JSX.Element;
 export declare const useAnalysisRunner: () => {
     analysisStatus: AnalysisStatus;
-    analyze: (url: string) => void;
+    analyze: (url: string, onSuccessCallback?: () => Promise<void>) => void;
     stop: () => void;
     logAsStaticArrayRef: MutableRefObject<{
         text: string;

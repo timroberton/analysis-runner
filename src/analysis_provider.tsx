@@ -24,7 +24,7 @@ type AnalysisProviderProps = {
 //@ts-ignore
 const Context = createContext<{
   analysisStatus: AnalysisStatus;
-  analyze: (url: string) => void;
+  analyze: (url: string, onSuccessCallback?: () => Promise<void>) => void;
   stop: () => void;
   logAsStaticArrayRef: MutableRefObject<
     {
@@ -64,7 +64,7 @@ export default function AnalysisRunnerProvider(p: AnalysisProviderProps) {
     }, 500);
   }
 
-  function analyze(url: string, onSuccessCallback?: () => {}) {
+  function analyze(url: string, onSuccessCallback?: () => Promise<void>) {
     if (
       eventsRef.current &&
       eventsRef.current.readyState !== eventsRef.current.CLOSED
