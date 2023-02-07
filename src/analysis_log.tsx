@@ -11,7 +11,7 @@ type AnalysisLogProps = {
   logAsStaticArrayRef: MutableRefObject<{ text: string; code: LogCode }[]>;
 };
 
-export const AnalysisLog: React.FC<AnalysisLogProps> = (p) => {
+export const AnalysisRunnerLog: React.FC<AnalysisLogProps> = (p) => {
   const { rect, ref } = useClientRect();
   const listRef = useRef<FixedSizeList<string> | null>(null);
   const listBodyRef = useRef<HTMLDivElement>();

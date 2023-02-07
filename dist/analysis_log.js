@@ -5,7 +5,7 @@ import { useClientRect } from "./client_rect";
 import { FixedSizeList } from "react-window";
 import { useRef, useEffect } from "react";
 import { LogCode } from "./types";
-export var AnalysisLog = function (p) {
+export var AnalysisRunnerLog = function (p) {
     var _a = useClientRect(), rect = _a.rect, ref = _a.ref;
     var listRef = useRef(null);
     var listBodyRef = useRef();

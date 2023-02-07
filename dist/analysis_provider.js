@@ -5,7 +5,7 @@ import { createContext, useContext, useRef, useState, } from "react";
 import { LogCode, MessageType, Stage, StageResult, Status, } from "./types";
 //@ts-ignore
 var Context = createContext();
-export default function AnalysisProvider(p) {
+export default function AnalysisRunnerProvider(p) {
     var _a = useState(freshAnalysisStatus()), analysisStatus = _a[0], setAnalysisStatus = _a[1];
     var eventsRef = useRef(undefined);
     var isAnalysingRef = useRef(false);
@@ -25,7 +25,7 @@ export default function AnalysisProvider(p) {
             }
         }, 500);
     }
-    function analyze(url) {
+    function analyze(url, onSuccessCallback) {
         if (eventsRef.current &&
             eventsRef.current.readyState !== eventsRef.current.CLOSED) {
             console.log("EventSource readyState =", eventsRef.current.readyState);
@@ -158,6 +158,9 @@ export default function AnalysisProvider(p) {
                             return newStatus;
                         });
                         eventsRef.current.close();
+                        if (typeof onSuccessCallback === "function") {
+                            onSuccessCallback();
+                        }
                     }
                     return;
                 default:
@@ -213,7 +216,7 @@ export default function AnalysisProvider(p) {
             updateServerIP: updateServerIP,
         } }, { children: p.children })));
 }
-export var useAnalysis = function () { return useContext(Context); };
+export var useAnalysisRunner = function () { return useContext(Context); };
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////

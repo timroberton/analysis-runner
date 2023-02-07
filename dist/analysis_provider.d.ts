@@ -3,8 +3,8 @@ import { AnalysisStatus, LogCode } from "./types";
 type AnalysisProviderProps = {
     children: React.ReactNode;
 };
-export default function AnalysisProvider(p: AnalysisProviderProps): JSX.Element;
-export declare const useAnalysis: () => {
+export default function AnalysisRunnerProvider(p: AnalysisProviderProps): JSX.Element;
+export declare const useAnalysisRunner: () => {
     analysisStatus: AnalysisStatus;
     analyze: (url: string) => void;
     stop: () => void;

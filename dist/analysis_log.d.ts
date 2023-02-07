@@ -8,6 +8,6 @@ type AnalysisLogProps = {
         code: LogCode;
     }[]>;
 };
-export declare const AnalysisLog: React.FC<AnalysisLogProps>;
+export declare const AnalysisRunnerLog: React.FC<AnalysisLogProps>;
 export {};
 //# sourceMappingURL=analysis_log.d.ts.map

@@ -37,7 +37,7 @@ const Context = createContext<{
   updateServerIP: (ip: string) => void;
 }>();
 
-export default function AnalysisProvider(p: AnalysisProviderProps) {
+export default function AnalysisRunnerProvider(p: AnalysisProviderProps) {
   const [analysisStatus, setAnalysisStatus] = useState<AnalysisStatus>(
     freshAnalysisStatus()
   );
@@ -64,7 +64,7 @@ export default function AnalysisProvider(p: AnalysisProviderProps) {
     }, 500);
   }
 
-  function analyze(url: string) {
+  function analyze(url: string, onSuccessCallback?: () => {}) {
     if (
       eventsRef.current &&
       eventsRef.current.readyState !== eventsRef.current.CLOSED
@@ -218,6 +218,9 @@ export default function AnalysisProvider(p: AnalysisProviderProps) {
               return newStatus;
             });
             eventsRef.current.close();
+            if (typeof onSuccessCallback === "function") {
+              onSuccessCallback();
+            }
           }
           return;
         default:
@@ -287,7 +290,7 @@ export default function AnalysisProvider(p: AnalysisProviderProps) {
   );
 }
 
-export const useAnalysis = () => useContext(Context);
+export const useAnalysisRunner = () => useContext(Context);
 
 ///////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
