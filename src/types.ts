@@ -84,11 +84,3 @@ export enum LogCode {
   Err,
   Waiting,
 }
-
-export type AnalysisPackage = {
-  id: string;
-  code: string;
-  language: "typescript" | "r" | "stata";
-  inputs: { analysisId: string; fileName: string }[];
-  outputs: { fileName: string }[];
-};

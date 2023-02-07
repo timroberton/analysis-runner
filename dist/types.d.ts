@@ -64,16 +64,4 @@ export declare enum LogCode {
     Err = 2,
     Waiting = 3
 }
-export type AnalysisPackage = {
-    id: string;
-    code: string;
-    language: "typescript" | "r" | "stata";
-    inputs: {
-        analysisId: string;
-        fileName: string;
-    }[];
-    outputs: {
-        fileName: string;
-    }[];
-};
 //# sourceMappingURL=types.d.ts.map
