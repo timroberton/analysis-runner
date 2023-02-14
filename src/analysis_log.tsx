@@ -1,14 +1,18 @@
 "use client";
 
-import { useClientRect } from "./client_rect";
+import { useEffect, useRef, useState } from "react";
 import { FixedSizeList } from "react-window";
-import { useRef, useEffect, MutableRefObject } from "react";
-import { LogCode } from "./types";
+import { useClientRect } from "./client_rect";
+import {
+  LogCode,
+  MessageType,
+  RealTimeMessage,
+  Stage,
+  StageResult,
+} from "./types";
 
 type AnalysisLogProps = {
-  show: boolean;
-  logCount: number; // This updates the virtualized window
-  logAsStaticArrayRef: MutableRefObject<{ text: string; code: LogCode }[]>;
+  listenUrl: string;
 };
 
 export const AnalysisRunnerLog: React.FC<AnalysisLogProps> = (p) => {
@@ -16,9 +20,90 @@ export const AnalysisRunnerLog: React.FC<AnalysisLogProps> = (p) => {
   const listRef = useRef<FixedSizeList<string> | null>(null);
   const listBodyRef = useRef<HTMLDivElement>();
   const wasListAtBottom = useRef(true);
+  const eventSourceRef = useRef<EventSource | undefined>(undefined);
+  const logAsStaticArrayRef = useRef<{ text: string; code: LogCode }[]>([
+    { text: "Not yet run", code: LogCode.StatusUpdate },
+  ]);
+  const [logCount, setLogCount] = useState<number>(1);
 
   useEffect(() => {
-    if (p.logCount <= 1) {
+    const id = window.setInterval(() => {
+      setLogCount(logAsStaticArrayRef.current.length);
+    }, 500);
+    return () => window.clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    eventSourceRef.current = new EventSource(p.listenUrl);
+
+    logAsStaticArrayRef.current = [
+      { text: "*** Opened connection ***", code: LogCode.StatusUpdate },
+    ];
+
+    eventSourceRef.current.onmessage = function (ev) {
+      const msgObj: RealTimeMessage = JSON.parse(ev.data);
+      switch (msgObj.msgType) {
+        case MessageType.Heartbeat:
+          break;
+        case MessageType.Stage:
+          if (
+            msgObj.stage === Stage.InitializeAnalysis &&
+            msgObj.stageResult === StageResult.Success
+          ) {
+            logAsStaticArrayRef.current = [
+              {
+                text: "*** Starting new analysis ***",
+                code: LogCode.StatusUpdate,
+              },
+            ];
+          }
+          break;
+        case MessageType.LogOut:
+          logAsStaticArrayRef.current.push({
+            text: msgObj.log,
+            code: LogCode.Out,
+          });
+          break;
+        case MessageType.LogErr:
+          logAsStaticArrayRef.current.push({
+            text: msgObj.log,
+            code: LogCode.Err,
+          });
+          break;
+        default:
+          logAsStaticArrayRef.current.push({
+            text: "Different msg type " + msgObj.msgType,
+            code: LogCode.StatusUpdate,
+          });
+      }
+    };
+
+    eventSourceRef.current.onopen = function (ev) {
+      // This means that analysis was launched from client
+      // console.log("Open", ev);
+    };
+
+    eventSourceRef.current.onerror = function (ev) {
+      // This means that analysis ended on server
+      console.log("Error", ev);
+      if (
+        eventSourceRef.current &&
+        eventSourceRef.current.readyState !== eventSourceRef.current.CLOSED
+      ) {
+        logAsStaticArrayRef.current.push({
+          text: "*** Error ***",
+          code: LogCode.StatusUpdate,
+        });
+        // eventSourceRef.current.close();
+      }
+      // updateLog();
+    };
+
+    return () => eventSourceRef.current.close();
+  }, []);
+
+  useEffect(() => {
+    if (logCount <= 1) {
       wasListAtBottom.current = true;
     }
     if (
@@ -27,9 +112,9 @@ export const AnalysisRunnerLog: React.FC<AnalysisLogProps> = (p) => {
       wasListAtBottom.current &&
       !isListAtBottom(listBodyRef.current)
     ) {
-      listRef.current.scrollToItem(p.logCount - 1);
+      listRef.current.scrollToItem(logCount - 1);
     }
-  }, [p.logCount]);
+  }, [logCount]);
 
   function updateScrolledState() {
     requestAnimationFrame(() => {
@@ -44,22 +129,19 @@ export const AnalysisRunnerLog: React.FC<AnalysisLogProps> = (p) => {
     <div
       className="h-full w-full select-text whitespace-pre bg-neutral font-mono text-xs leading-none text-white"
       ref={ref}
-      style={{
-        opacity: p.show ? 1 : 0,
-      }}
     >
       {rect && rect.width && rect.height && (
         <FixedSizeList
           width={rect.width}
           height={rect.height}
-          itemCount={p.logCount}
+          itemCount={logCount}
           itemSize={20}
           ref={listRef}
           innerRef={listBodyRef}
           onScroll={updateScrolledState}
         >
           {({ index, style }) => {
-            const item = p.logAsStaticArrayRef.current[index];
+            const item = logAsStaticArrayRef.current[index];
             return (
               <div
                 key={index}
