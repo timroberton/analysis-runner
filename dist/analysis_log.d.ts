@@ -1,12 +1,6 @@
-import { MutableRefObject } from "react";
-import { LogCode } from "./types";
+/// <reference types="react" />
 type AnalysisLogProps = {
-    show: boolean;
-    logCount: number;
-    logAsStaticArrayRef: MutableRefObject<{
-        text: string;
-        code: LogCode;
-    }[]>;
+    listenUrl: string;
 };
 export declare const AnalysisRunnerLog: React.FC<AnalysisLogProps>;
 export {};
