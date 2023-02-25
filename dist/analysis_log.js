@@ -78,7 +78,7 @@ export var AnalysisRunnerLog = function (p) {
             }
             // updateLog();
         };
-        return function () { return eventSourceRef.current.close(); };
+        return function () { var _a; return (_a = eventSourceRef.current) === null || _a === void 0 ? void 0 : _a.close(); };
     }, []);
     useEffect(function () {
         if (logCount <= 1) {
@@ -99,7 +99,7 @@ export var AnalysisRunnerLog = function (p) {
             }
         });
     }
-    return (_jsx("div", __assign({ className: "h-full w-full select-text whitespace-pre bg-neutral font-mono text-xs leading-none text-white", ref: ref }, { children: rect && rect.width && rect.height && (_jsx(FixedSizeList, __assign({ width: rect.width, height: rect.height, itemCount: logCount, itemSize: 20, ref: listRef, innerRef: listBodyRef, onScroll: updateScrolledState }, { children: function (_a) {
+    return (_jsx("div", __assign({ className: "h-full w-full select-text whitespace-pre font-mono text-sm leading-none text-white", ref: ref }, { children: rect && rect.width && rect.height && (_jsx(FixedSizeList, __assign({ width: rect.width, height: rect.height, itemCount: logCount, itemSize: 20, ref: listRef, innerRef: listBodyRef, onScroll: updateScrolledState }, { children: function (_a) {
                 var index = _a.index, style = _a.style;
                 var item = logAsStaticArrayRef.current[index];
                 return (_jsx("div", __assign({ style: __assign(__assign({}, style), { lineHeight: "20px", color: colorForCode(item.code) }), className: "m-0 select-text px-2 py-0" }, { children: item.text }), index));

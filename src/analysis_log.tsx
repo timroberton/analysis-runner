@@ -99,7 +99,7 @@ export const AnalysisRunnerLog: React.FC<AnalysisLogProps> = (p) => {
       // updateLog();
     };
 
-    return () => eventSourceRef.current.close();
+    return () => eventSourceRef.current?.close();
   }, []);
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export const AnalysisRunnerLog: React.FC<AnalysisLogProps> = (p) => {
 
   return (
     <div
-      className="h-full w-full select-text whitespace-pre bg-neutral font-mono text-xs leading-none text-white"
+      className="h-full w-full select-text whitespace-pre font-mono text-sm leading-none text-white"
       ref={ref}
     >
       {rect && rect.width && rect.height && (
